@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ari Store - سیستەمی کلیلە زیرەکەکان</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007aff;
+            --secondary-color: #5856d6;
+            --background-color: #f5f5f7;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #888888;
+            --success-color: #4cd964;
+            --error-color: #ff3b30;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 64px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            color: var(--text-color);
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            background-color: rgba(235, 235, 245, 0.6);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .key-result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            border: 1px dashed var(--primary-color);
+            text-align: center;
+            font-family: monospace;
+            font-size: 16px;
+            word-break: break-all;
+            display: none;
+        }
+
+        .admin-panel {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .admin-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .status-active {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .status-expired {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .message-success {
+            background-color: rgba(76, 217, 100, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .message-error {
+            background-color: rgba(255, 59, 48, 0.2);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-key"></i>
+            <h1>Ari Store - سیستەمی کلیل</h1>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('activation')">فعالکردن</div>
+            <div class="tab" onclick="showTab('admin')">بەڕێوەبەری</div>
+        </div>
+
+        <div id="activation-tab" class="tab-content active">
+            <div class="message" id="activationMessage"></div>
+
+            <div class="card">
+                <div class="card-title">چوونەژوورەوە بە کلیل</div>
+                <div class="form-group">
+                    <label for="activationKey">کلیلی فعالکردن</label>
+                    <input type="text" id="activationKey" placeholder="کلیلی فعالکردن بنووسە">
+                </div>
+                <button class="btn btn-primary" onclick="activateKey()">چوونەژوورەوە</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">پێویستی بە کلیلێکی نوێ?</div>
+                <p style="text-align: center; margin-bottom: 15px;">پەیوەندی بە بەڕێوەبەرەوە بکە بۆ داواکردنی کلیلێکی نوێ</p>
+                <div class="form-group">
+                    <label for="deviceUDID">UDID ئامێر</label>
+                    <input type="text" id="deviceUDID" placeholder="UDID ئامێرەکەت بنووسە">
+                </div>
+                <button class="btn" onclick="requestKey()">داواکاری کلیل</button>
+            </div>
+        </div>
+
+        <div id="admin-tab" class="tab-content">
+            <div class="message" id="adminMessage"></div>
+
+            <div class="login-form" id="adminLoginForm">
+                <div class="card">
+                    <div class="card-title">چوونەژوورەوەی بەڕێوەبەر</div>
+                    <div class="form-group">
+                        <label for="adminUsername">ناوی بەکارهێنەر</label>
+                        <input type="text" id="adminUsername" placeholder="ناوی بەکارهێنەر">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">تێپەڕەوشە</label>
+                        <input type="password" id="adminPassword" placeholder="تێپەڕەوشە">
+                    </div>
+                    <button class="btn btn-primary" onclick="adminLogin()">چوونەژوورەوە</button>
+                </div>
+            </div>
+
+            <div class="admin-panel" id="adminPanel">
+                <div class="card">
+                    <div class="card-title">دروستکردنی کلیلی نوێ</div>
+                    <div class="form-group">
+                        <label for="newKeyUDID">UDID ئامێر</label>
+                        <input type="text" id="newKeyUDID" placeholder="UDID ئامێر">
+                    </div>
+                    <div class="form-group">
+                        <label for="newKeyExpiry">ماوەی بەسەرچوون</label>
+                        <select id="newKeyExpiry">
+                            <option value="7">7 ڕۆژ</option>
+                            <option value="30">30 ڕۆژ</option>
+                            <option value="90">90 ڕۆژ</option>
+                            <option value="365">1 ساڵ</option>
+                            <option value="0">بێ کاتی</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateKey()">دروستکردنی کلیل</button>
+                    
+                    <div class="key-result" id="keyResult">
+                        کلیلێک دەرنەچووە...
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">کلیلە فعالکراوەکان</div>
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>کلیل</th>
+                                    <th>UDID</th>
+                                    <th>بەسەرچوون</th>
+                                    <th>بارە</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keysTableBody">
+                                <tr>
+                                    <td colspan="4" style="text-align: center;">هیچ کلیلێک بوونی نیە</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // زانیارییەکان لە localStorage
+        let activationKeys = JSON.parse(localStorage.getItem('ariActivationKeys')) || [];
+        const adminUsername = "admin";
+        const adminPassword = "password123";
+
+        // نیشاندانی تاب
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`.tab:nth-child(${tabName === 'activation' ? 1 : 2})`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // چالاککردنی کلیل
+        function activateKey() {
+            const keyInput = document.getElementById('activationKey').value.trim();
+            const messageElement = document.getElementById('activationMessage');
+            
+            if (!keyInput) {
+                showMessage(messageElement, 'تکایە کلیلی فعالکردن بنووسە', 'error');
+                return;
+            }
+            
+            const keyData = activationKeys.find(k => k.key === keyInput);
+            
+            if (!keyData) {
+                showMessage(messageElement, 'کلیلەکە نادروستە', 'error');
+                return;
+            }
+            
+            if (keyData.expiry !== "0") {
+                const expiryDate = new Date(keyData.expiry);
+                if (expiryDate < new Date()) {
+                    showMessage(messageElement, 'کلیلەکە بەسەرچووە', 'error');
+                    return;
+                }
+            }
+            
+            showMessage(messageElement, 'بەسەرکەوتوویی چوویتەژوورەوە! ئێستا دەتوانیت چەک بکەیت بۆ Ari Store', 'success');
+            
+            // لێرەدا دەکرێت ڕێگە بە چوونە ناو ستۆرەکە بدرێت
+            setTimeout(() => {
+                window.location.href = "ari-store.html"; // پەڕەی سەرەکی ستۆرەکە
+            }, 2000);
+        }
+
+        // داواکاری کلیلێکی نوێ
+        function requestKey() {
+            const udid = document.getElementById('deviceUDID').value.trim();
+            const messageElement = document.getElementById('activationMessage');
+            
+            if (!udid) {
+                showMessage(messageElement, 'تکایە UDID ئامێرەکەت بنووسە', 'error');
+                return;
+            }
+            
+            showMessage(messageElement, 'داواکاریەکەت نێردرا. پەیوەندی بە بەڕێوەبەرەوە بکە بۆ چاککردنی کلیلەکەت', 'success');
+            document.getElementById('deviceUDID').value = '';
+        }
+
+        // چوونەژوورەوەی بەڕێوەبەر
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const messageElement = document.getElementById('adminMessage');
+            
+            if (username === adminUsername && password === adminPassword) {
+                document.getElementById('adminLoginForm').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                showMessage(messageElement, 'بەسەرکەوتوویی چوویتەژوورەوە', 'success');
+                updateKeysTable();
+            } else {
+                showMessage(messageElement, 'ناوی بەکارهێنەر یان تێپەڕەوشە هەڵەیە', 'error');
+            }
+        }
+
+        // دروستکردنی کلیلێکی نوێ
+        function generateKey() {
+            const udid = document.getElementById('newKeyUDID').value.trim();
+            const expiryDays = document.getElementById('newKeyExpiry').value;
+            const messageElement = document.getElementById('adminMessage');
+            const keyResult = document.getElementById('keyResult');
+            
+            if (!udid) {
+                showMessage(messageElement, 'تکایە UDID ئامێر بنووسە', 'error');
+                return;
+            }
+            
+            // دروستکردنی کلیلێکی هەڵە
+            const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
+            const date = new Date();
+            const datePart = date.getDate().toString().padStart(2, '0') + 
+                            (date.getMonth() + 1).toString().padStart(2, '0') + 
+                            date.getFullYear().toString().substring(2);
+            
+            let key = `ARI-${randomPart}-${datePart}-${udid.substring(0, 4).toUpperCase()}`;
+            
+            // زیادکردنی بەشی کات لە کلیلەکە
+            let expiryDate = null;
+            if (expiryDays !== "0") {
+                expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + parseInt(expiryDays));
+                const expiryStr = expiryDate.getDate().toString().padStart(2, '0') + 
+                                 (expiryDate.getMonth() + 1).toString().padStart(2, '0') + 
+                                 expiryDate.getFullYear().toString().substring(2);
+                key += `-EXP-${expiryStr}`;
+            } else {
+                key += `-PERM`;
+                expiryDate = "0";
+            }
+            
+            // پاشەکەوتکردنی کلیلەکە
+            activationKeys.push({
+                key: key,
+                udid: udid,
+                expiry: expiryDays !== "0" ? expiryDate.toISOString() : "0",
+                created: new Date().toISOString()
+            });
+            
+            localStorage.setItem('ariActivationKeys', JSON.stringify(activationKeys));
+            
+            // نیشاندانی کلیلەکە
+            keyResult.textContent = key;
+            keyResult.style.display = 'block';
+            
+            showMessage(messageElement, 'کلیلەکە بەسەرکەوتوویی دروستکرا', 'success');
+            document.getElementById('newKeyUDID').value = '';
+            
+            updateKeysTable();
+        }
+
+        // نوێکردنەوەی خشتەی کلیلەکان
+        function updateKeysTable() {
+            const tableBody = document.getElementById('keysTableBody');
+            tableBody.innerHTML = '';
+            
+            if (activationKeys.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">هیچ کلیلێک بوونی نیە</td></tr>';
+                return;
+            }
+            
+            activationKeys.forEach(keyData => {
+                const row = document.createElement('tr');
+                
+                // کلیل
+                const keyCell = document.createElement('td');
+                keyCell.textContent = keyData.key;
+                row.appendChild(keyCell);
+                
+                // UDID
+                const udidCell = document.createElement('td');
+                udidCell.textContent = keyData.udid;
+                row.appendChild(udidCell);
+                
+                // بەسەرچوون
+                const expiryCell = document.createElement('td');
+                if (keyData.expiry === "0") {
+                    expiryCell.textContent = "بێ کاتی";
+                } else {
+                    const expiryDate = new Date(keyData.expiry);
+                    expiryCell.textContent = expiryDate.toLocaleDateString('ku');
+                }
+                row.appendChild(expiryCell);
+                
+                // بارە
+                const statusCell = document.createElement('td');
+                if (keyData.expiry === "0") {
+                    statusCell.textContent = "چالاک";
+                    statusCell.className = "status-active";
+                } else {
+                    const expiryDate = new Date(keyData.expiry);
+                    if (expiryDate < new Date()) {
+                        statusCell.textContent = "بەسەرچوو";
+                        statusCell.className = "status-expired";
+                    } else {
+                        statusCell.textContent = "چالاک";
+                        statusCell.className = "status-active";
+                    }
+                }
+                row.appendChild(statusCell);
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // نیشاندانی پەیام
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = `message message-${type}`;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+
+        // دانانی UDIDی ئامێر بۆ ئاسانی
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('deviceUDID').placeholder = "UDID ئامێر (نموونە: 5a3b8c2d1e9f7a6b)";
+            document.getElementById('newKeyUDID').placeholder = "UDID ئامێر (نموونە: 5a3b8c2d1e9f7a6b)";
+        });
+    </script>
+</body>
+</html>
